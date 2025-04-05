@@ -1,12 +1,11 @@
-import '../styles/About.css'; // Create corresponding CSS file
+import React from 'react';
 
 const About = () => {
   const teamMembers = [
-    "Anita Badu",
-    "Dinesh Prasad Bhatt",
-    "Goma Chand",
-    "Puskar Bhatt",
-    
+    { name: "Anita Badu", photo: "/images/anita.jpg" },
+    { name: "Dinesh Prasad Bhatt", photo: "/images/dinesh.jpg" },
+    { name: "Goma Chand", photo: "/images/goma.jpg" },
+    { name: "Puskar Bhatt", photo: "/images/puskar.JPG" },
   ];
 
   const features = [
@@ -16,41 +15,42 @@ const About = () => {
   ];
 
   return (
-    <section className="about-container">
-
-      <div className="content-section">
-        <p className="intro-text">
+    <section className="p-8">
+      <div className="content-section mb-8">
+        <p className="text-lg max-w-2xl mx-auto text-center">
           We are a team of undergraduate students from the Department of Computer Engineering
-          at the School OF ENGINEERING(SOE), Far western University(FU), passionate about leveraging technology to address educational challenges.
+          at the School OF ENGINEERING (SOE), Far Western University (FWU), passionate about leveraging technology to address educational challenges.
         </p>
       </div>
 
-      <div className="content-section">
-        <h2 className="subsection-title">Who We Are</h2>
-        <ul className="team-list">
+      <div className="content-section mb-8">
+        <h2 className="text-2xl font-bold text-center mb-4">Who We Are</h2>
+        <ul className="flex flex-wrap justify-center gap-8">
           {teamMembers.map((member, index) => (
-            <li key={index} className="team-member">{member}</li>
+            <li key={index} className="text-center">
+              <img src={member.photo} alt={member.name} className="w-24 h-24 object-cover rounded-full mb-4 shadow-lg" />
+              <div>{member.name}</div>
+            </li>
           ))}
         </ul>
       </div>
 
-      <div className="content-section">
-        <h2 className="subsection-title">Our Vision</h2>
-        <p className="vision-text">
+      <div className="content-section mb-8">
+        <h2 className="text-2xl font-bold text-center mb-4">Our Vision</h2>
+        <p className="text-lg max-w-2xl mx-auto text-center">
           To revolutionize NEC exam preparation by bridging the gap between theoretical knowledge
           and practical readiness through simulated exam environments and gamified learning experiences.
         </p>
       </div>
 
-      <div className="content-section">
-        <h2 className="subsection-title">What We Offer</h2>
-        <ul className="feature-list">
+      <div className="content-section mb-8">
+        <h2 className="text-2xl font-bold text-center mb-4">What We Offer</h2>
+        <ul className="list-disc list-inside max-w-2xl mx-auto">
           {features.map((feature, index) => (
-            <li key={index} className="feature-item">{feature}</li>
+            <li key={index} className="text-lg mb-3">{feature}</li>
           ))}
         </ul>
       </div>
-
     </section>
   );
 };
