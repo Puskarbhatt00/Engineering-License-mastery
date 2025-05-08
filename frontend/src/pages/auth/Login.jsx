@@ -11,32 +11,32 @@ import { toast } from 'react-toastify';
 
 const Login = () => {
   const [email, setEmail] = useState("")
-  const [password,setPassword] = useState("")
+  const [password, setPassword] = useState("")
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [login] = useLoginMutation()
-  const {userInfo} = useSelector((state)=>state.auth)
-  const {search} = useLocation()
+  const { userInfo } = useSelector((state) => state.auth)
+  const { search } = useLocation()
   const sp = new URLSearchParams(search)
   const redirect = sp.get("redirect") || "/"
-  
-  useEffect(()=>{
-      if (userInfo) {
-          navigate(redirect)
-      }
-  },[navigate,redirect,userInfo])
-  
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate(redirect)
+    }
+  }, [navigate, redirect, userInfo])
+
   const submitHandler = async (e) => {
-      e.preventDefault();
-      try {
-        const res = await login({ email, password }).unwrap();
-        console.log(res);
-        dispatch(setCredentials({ ...res }));
-        navigate(redirect);
-      } catch (err) {
-        toast.error(err?.data?.message || err.error);
-      }
-    };
+    e.preventDefault();
+    try {
+      const res = await login({ email, password }).unwrap();
+      console.log(res);
+      dispatch(setCredentials({ ...res }));
+      navigate(redirect);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   return (
     <div className="login-container">
@@ -65,8 +65,12 @@ const Login = () => {
               required
             />
           </div>
+          <div className="forgot-password-link">
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </div>
           <button type="submit" className="login-button">Login</button>
         </form>
+
         <p className="signup-link">
           Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>

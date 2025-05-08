@@ -3,6 +3,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGetQuestionByIdQuery, useUpdateQuestionMutation } from '../../../redux/api/questions/questionApiSlice';
 import { toast } from 'react-toastify';
 
+// Define all available categories
+const allCategories = [
+  
+  'Agriculture Engineering',
+  'Architecture Engineering',
+  'Automobile Engineering',
+  'Civil Engineering',
+  'Computer Engineering',
+  'Electrical Engineering',
+  'Electronics Engineering',
+  'Mechanical Engineering',
+  'Geomatics Engineering',
+  'Software Engineering',
+  'Biomedical Engineering'
+];
+
 const EditQuestion = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -11,7 +27,7 @@ const EditQuestion = () => {
   const [formData, setFormData] = useState({
     text: '',
     options: ['', '', '', ''],
-    correctAnswer: '',
+    correctAnswer: 'A',
     category: ''
   });
 
@@ -96,21 +112,26 @@ const EditQuestion = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Category</label>
-          <input
-            type="text"
-            placeholder="Category"
+          <select
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+          >
+            <option value="">Select a category</option>
+            {allCategories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
 
         <button
           type="submit"
           className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
-          {isUpdating ? 'Saving...' : 'Save Question'}
+          {isUpdating ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
     </div>

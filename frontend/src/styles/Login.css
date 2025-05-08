@@ -94,3 +94,19 @@
   .login-container { /* Or any other container */
     background-color: #c5bdc4; /* Slightly darker gray */
   }
+
+  .forgot-password-link {
+    text-align: right;
+    margin-bottom: 10px;
+  }
+  
+  .forgot-password-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.95em;
+  }
+  
+  .forgot-password-link a:hover {
+    text-decoration: underline;
+  }
+  

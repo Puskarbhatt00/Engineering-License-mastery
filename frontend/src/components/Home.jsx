@@ -1,10 +1,10 @@
 import React from 'react';
-import { FaBook, FaChartLine, FaTrophy, FaMobileAlt, FaRegSmileBeam, FaArrowRight } from 'react-icons/fa'; // Added FaArrowRight
-import { useNavigate } from 'react-router-dom'; // Import useNavigate to courses
+import { FaBook, FaChartLine,FaLightbulb, FaTrophy, FaMobileAlt, FaRegSmileBeam, FaArrowRight,FaUserGraduate } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 
 const Home = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const features = [
     {
@@ -34,7 +34,7 @@ const Home = () => {
   ];
 
   const handleTryTestClick = () => {
-    navigate('/courses'); // Navigate to /courses
+    navigate('/courses');
   };
 
   return (
@@ -45,13 +45,16 @@ const Home = () => {
           <div className="hero-text">
             <h1 className="gradient-text">Master Your NEC License Exam</h1>
             <p className="hero-subtitle">Join 10,000+ engineers who boosted their scores by 40%</p>
-            <button className="hero-cta" onClick={handleTryTestClick}> {/* Add onClick */}
-            Try Test <FaArrowRight className="cta-icon" />
+            <button className="hero-cta" onClick={handleTryTestClick}>
+              Try Test <FaArrowRight className="cta-icon" />
             </button>
           </div>
           <div className="hero-illustration">
             <div className="glowing-card">
-              <FaRegSmileBeam className="main-illustration" />
+            <FaUserGraduate className="main-illustration" />
+
+
+
               <div className="glow"></div>
             </div>
           </div>
@@ -66,7 +69,7 @@ const Home = () => {
             <div 
               className="feature-card" 
               key={index}
-              style={{ '--accent': feature.color }} // Dynamic color for each card
+              style={{ '--accent': feature.color }}
             >
               <div className="feature-icon-wrapper">
                 {feature.icon}

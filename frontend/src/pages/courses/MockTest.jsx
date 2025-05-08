@@ -1,179 +1,68 @@
-
-
-// import React, { useState, useEffect } from 'react';
-// import { useParams } from 'react-router-dom';
-// import { useQuestionByCategoryQuery } from '../../redux/api/questions/questionApiSlice';
-
-// const MockTest = () => {
-//   const { category } = useParams(); // Get category from URL
-//   const { data: questions = [], isLoading, isError } = useQuestionByCategoryQuery(category);
-//   const [currentQuestion, setCurrentQuestion] = useState(0);
-//   const [selectedOptions, setSelectedOptions] = useState({});
-//   const [isSubmitted, setIsSubmitted] = useState(false);
-//   const [score, setScore] = useState(0);
-//   const [timeLeft, setTimeLeft] = useState(60); // 5-minute timer
-
-//   // Timer Countdown
-//   useEffect(() => {
-//     if (!isSubmitted && timeLeft > 0) {
-//       const timer = setInterval(() => {
-//         setTimeLeft((prev) => prev - 1);
-//       }, 1000);
-//       return () => clearInterval(timer);
-//     } else if (timeLeft === 0) {
-//       calculateScore(); // Auto-submit
-//     }
-//   }, [timeLeft, isSubmitted]);
-
-//   // Format Time (MM:SS)
-//   const formatTime = (seconds) => {
-//     const mins = Math.floor(seconds / 60);
-//     const secs = seconds % 60;
-//     return `${mins}:${secs.toString().padStart(2, '0')}`;
-//   };
-
-//   // Calculate Score
-//   const calculateScore = () => {
-//     let correct = 0;
-//     questions.forEach((q, index) => {
-//       if (selectedOptions[index] === q.correctAnswer) correct++;
-//     });
-//     setScore(correct);
-//     setIsSubmitted(true);
-//   };
-
-//   // Handle Option Selection
-//   const handleOptionSelect = (optionKey) => {
-//     setSelectedOptions({
-//       ...selectedOptions,
-//       [currentQuestion]: optionKey,
-//     });
-//   };
-
-//   if (isLoading) {
-//     return <div className="text-center text-xl">Loading...</div>;
-//   }
-
-//   if (isError) {
-//     return <div className="text-center text-xl text-red-500">Error loading questions</div>;
-//   }
-
-//   return (
-//     <div className="mock-test text-black p-4">
-//       {!isSubmitted ? (
-//         <>
-//           <div className="timer text-center text-lg mb-4">
-//             Time Remaining: {formatTime(timeLeft)}
-//           </div>
-
-//           <h2 className="text-2xl font-bold mb-4 text-center">Question {currentQuestion + 1}/20</h2>
-//           <p className="mb-4 text-center">{questions[currentQuestion]?.text}</p>
-          
-//           <div className="options mb-4 flex flex-row items-center justify-center gap-5">
-//             {questions[currentQuestion]?.options.map((option, idx) => {
-//               const optionKey = String.fromCharCode(65 + idx);
-//               return (
-//                 <label key={idx} className="block mb-2">
-//                   <input
-//                     type="radio"
-//                     name={`option-${currentQuestion}`}
-//                     value={optionKey}
-//                     checked={selectedOptions[currentQuestion] === optionKey}
-//                     onChange={() => handleOptionSelect(optionKey)}
-//                     className="mr-2"
-//                   />
-//                   {option}
-//                 </label>
-//               );
-//             })}
-//           </div>
-
-//           <div className="navigation flex justify-between">
-//             <button
-//               onClick={() => setCurrentQuestion(p => Math.max(0, p - 1))}
-//               disabled={currentQuestion === 0}
-//               className="py-2 px-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-//             >
-//               Previous
-//             </button>
-            
-//             {currentQuestion < 19 ? (
-//               <button
-//                 onClick={() => setCurrentQuestion(p => p + 1)}
-//                 disabled={!selectedOptions[currentQuestion]}
-//                 className="py-2 px-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-//               >
-//                 Next
-//               </button>
-//             ) : (
-//               <button
-//                 onClick={calculateScore}
-//                 className="py-2 px-4 bg-green-500 text-black rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-//               >
-//                 Submit
-//               </button>
-//             )}
-//           </div>
-//         </>
-//       ) : (
-//         <div className="results text-center">
-//           <h2 className="text-2xl font-bold mb-4">Test {timeLeft === 0 ? "Time's Up!" : "Submitted"} 🚨</h2>
-//           <p className="text-xl mb-4">Total Marks: {score}/20</p>
-//           <div className="answer-review">
-//             {questions.map((q, index) => (
-//               <div key={index} className="review-item mb-4">
-//                 <p className="font-bold">Q{index + 1}: {q.text}</p>
-//                 <p>Your Answer: {selectedOptions[index] || "Not answered"}</p>
-//                 <p>Correct Answer: {q.correctAnswer}</p>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default MockTest;
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { useQuestionByCategoryQuery, useSaveResultsMutation } from '../../redux/api/questions/questionApiSlice';
-import { useGetAllUsersQuery } from '../../redux/api/user/userApiSlice';
+import './MockTest.css';
+
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+const getFeedback = (percentage) => {
+  if (percentage >= 90) return "Excellent work! 🎉";
+  if (percentage >= 70) return "Good job! Keep practicing to reach perfection.";
+  if (percentage >= 50) return "Not bad! Review your mistakes and try again.";
+  return "Keep working hard! Practice makes perfect.";
+};
 
 const MockTest = () => {
-  const { category } = useParams(); // Get category from URL
-  const { data: questions = [], isLoading, isError } = useQuestionByCategoryQuery(category);
+  const { category } = useParams();
+  const { data: originalQuestions = [], isLoading, isError } = useQuestionByCategoryQuery(category, {
+    refetchOnMountOrArgChange: true
+  });
+  
+  const questions = React.useMemo(() => 
+    shuffleArray(originalQuestions).slice(0, 20), 
+    [originalQuestions]
+  );
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10); // 5-minute timer
+  const [timeLeft, setTimeLeft] = useState(20);
   const [saveResults] = useSaveResultsMutation();
   const [startTime] = useState(Date.now());
+  const { userInfo } = useSelector(state => state.auth);
 
-  const { data: users, refetch, isLoading: isUsersLoading, error: usersError } = useGetAllUsersQuery();
+  useEffect(() => {
+    setTimeLeft(20);
+  }, [currentQuestion]);
 
-  // Timer Countdown
   useEffect(() => {
     if (!isSubmitted && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
+      const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearInterval(timer);
-    } else if (timeLeft === 0) {
-      calculateScore(); // Auto-submit
+    } else if (timeLeft === 0 && !isSubmitted) {
+      handleAutoAdvance();
     }
   }, [timeLeft, isSubmitted]);
 
-  // Format Time (MM:SS)
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const handleAutoAdvance = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(prev => prev + 1);
+    } else {
+      calculateScore();
+    }
   };
 
-  // Calculate Score
+  const formatTime = (seconds) => `0:${seconds.toString().padStart(2, '0')}`;
+
   const calculateScore = async () => {
     let correct = 0;
     const answers = questions.map((q, index) => {
@@ -181,7 +70,7 @@ const MockTest = () => {
       if (isCorrect) correct++;
       return {
         questionId: q._id,
-        userAnswer: selectedOptions[index],
+        userAnswer: selectedOptions[index] || "Not answered",
         correctAnswer: q.correctAnswer,
         isCorrect,
       };
@@ -190,10 +79,9 @@ const MockTest = () => {
     setScore(correct);
     setIsSubmitted(true);
 
-    // Save results to the database
     try {
       await saveResults({
-        userId: users?.[0]?.id || "user_id_placeholder",
+        userId: userInfo?._id,
         category,
         score: correct,
         totalQuestions: questions.length,
@@ -205,91 +93,136 @@ const MockTest = () => {
     }
   };
 
-  // Handle Option Selection
   const handleOptionSelect = (optionKey) => {
-    setSelectedOptions({
-      ...selectedOptions,
-      [currentQuestion]: optionKey,
-    });
+    setSelectedOptions(prev => ({ ...prev, [currentQuestion]: optionKey }));
   };
 
-  if (isLoading || isUsersLoading) {
-    return <div className="text-center text-xl">Loading...</div>;
-  }
+  const handleRetry = () => {
+    window.location.reload();
+  };
 
-  if (isError || usersError) {
-    return <div className="text-center text-xl text-red-500">Error loading questions</div>;
-  }
+  if (isLoading) return <div className="loading">Loading questions...</div>;
+  if (isError) return <div className="error">Error loading questions</div>;
+  if (questions.length === 0) return <div className="error">No questions available for this category</div>;
+
+  const percentage = Math.round((score / questions.length) * 100);
+  const feedback = getFeedback(percentage);
 
   return (
-    <div className="mock-test text-black p-4">
+    <div className="quiz-container">
       {!isSubmitted ? (
-        <>
-          <div className="timer text-center text-lg mb-4">
-            Time Remaining: {formatTime(timeLeft)}
+        <div className="test-active">
+          <div className="quiz-header">
+            <div className="category-badge">{category}</div>
+            <div className={`timer ${timeLeft <= 5 ? "timer-warning" : ""}`}>
+              Time Remaining: {formatTime(timeLeft)}
+            </div>
           </div>
 
-          <h2 className="text-2xl font-bold mb-4 text-center">Question {currentQuestion + 1}/20</h2>
-          <p className="mb-4 text-center">{questions[currentQuestion]?.text}</p>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{width: `${(currentQuestion + 1) / questions.length * 100}%`}} />
+          </div>
           
-          <div className="options mb-4 flex flex-row items-center justify-center gap-5">
-            {questions[currentQuestion]?.options.map((option, idx) => {
-              const optionKey = String.fromCharCode(65 + idx);
-              return (
-                <label key={idx} className="block mb-2">
-                  <input
-                    type="radio"
-                    name={`option-${currentQuestion}`}
-                    value={optionKey}
-                    checked={selectedOptions[currentQuestion] === optionKey}
-                    onChange={() => handleOptionSelect(optionKey)}
-                    className="mr-2"
-                  />
-                  {option}
-                </label>
-              );
-            })}
+          <div className="question-count">
+            Question {currentQuestion + 1}/{questions.length}
           </div>
 
-          <div className="navigation flex justify-between">
+          <div className="question-card">
+            <h2>{questions[currentQuestion]?.text}</h2>
+            <div className="options-container">
+              {questions[currentQuestion]?.options.map((option, idx) => {
+                const optionKey = String.fromCharCode(65 + idx);
+                return (
+                  <div 
+                    key={idx} 
+                    className={`option ${selectedOptions[currentQuestion] === optionKey ? 'selected' : ''}`}
+                    onClick={() => handleOptionSelect(optionKey)}
+                  >
+                    <span className="option-letter">{optionKey}</span>
+                    <span className="option-text">{option}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="navigation">
             <button
               onClick={() => setCurrentQuestion(p => Math.max(0, p - 1))}
               disabled={currentQuestion === 0}
-              className="py-2 px-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="nav-btn prev-btn"
             >
               Previous
             </button>
             
-            {currentQuestion < 19 ? (
+            {currentQuestion < questions.length - 1 ? (
               <button
                 onClick={() => setCurrentQuestion(p => p + 1)}
-                disabled={!selectedOptions[currentQuestion]}
-                className="py-2 px-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="nav-btn next-btn"
               >
                 Next
               </button>
             ) : (
               <button
                 onClick={calculateScore}
-                className="py-2 px-4 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="nav-btn submit-btn"
               >
                 Submit
               </button>
             )}
           </div>
-        </>
+        </div>
       ) : (
-        <div className="results text-center">
-          <h2 className="text-2xl font-bold mb-4">Test {timeLeft === 0 ? "Time's Up!" : "Submitted"} 🚨</h2>
-          <p className="text-xl mb-4">Total Marks: {score}/20</p>
-          <div className="answer-review">
+        <div className="results">
+          <h2 className="results-title">
+            {timeLeft === 0 ? "Time's Up!" : "Test Complete"}
+          </h2>
+          <div className="score-display">
+            <div className="score-circle">
+              <span className="score-value">{score}</span>
+              <span className="score-total">/{questions.length}</span>
+            </div>
+            <div className="percentage">
+              {percentage}%
+            </div>
+            <div className="feedback-message" style={{ margin: "18px 0 0 0", fontSize: "1.15rem", fontWeight: "500", color: "#2980b9" }}>
+              {feedback}
+            </div>
+          </div>
+
+          <h3 className="feedback-title">Question Review</h3>
+          <div className="feedback-list">
             {questions.map((q, index) => (
-              <div key={index} className="review-item mb-4">
-                <p className="font-bold">Q{index + 1}: {q.text}</p>
-                <p>Your Answer: {selectedOptions[index] || "Not answered"}</p>
-                <p>Correct Answer: {q.correctAnswer}</p>
+              <div 
+                key={index} 
+                className={`feedback-item ${selectedOptions[index] === q.correctAnswer ? 'correct' : 'incorrect'}`}
+              >
+                <div className="feedback-question">
+                  <span className="question-number">Q{index + 1}:</span> {q.text}
+                </div>
+                <div className="feedback-details">
+                  <div className="user-answer">
+                    <strong>Your answer:</strong> 
+                    {selectedOptions[index] 
+                      ? `${selectedOptions[index]} - ${q.options[selectedOptions[index].charCodeAt(0) - 65]}` 
+                      : "Not answered"}
+                  </div>
+                  <div className="correct-answer">
+                    <strong>Correct answer:</strong> 
+                    {`${q.correctAnswer} - ${q.options[q.correctAnswer.charCodeAt(0) - 65]}`}
+                  </div>
+                </div>
               </div>
             ))}
+          </div>
+
+          <div className="action-buttons">
+            <button onClick={() => window.location.href = '/courses'} className="action-btn">
+              Back to Courses
+            </button>
+            <button onClick={handleRetry} className="action-btn retry-btn">
+              Try Again
+            </button>
           </div>
         </div>
       )}

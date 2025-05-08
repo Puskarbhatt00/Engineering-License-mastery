@@ -18,6 +18,20 @@ import {apiSlice} from "../apiSlice"
 
             })
         }),
+        forgotPassword: builder.mutation({
+            query: (data) => ({
+                url: `${USER_URL}/forgot-password`,
+                method: "POST",
+                body: data
+            })
+        }),
+        resetPassword: builder.mutation({
+            query: ({ token, password }) => ({
+                url: `${USER_URL}/reset-password/${token}`,
+                method: "POST",
+                body: { password }
+            })
+        }),
         register : builder.mutation({
             query : (data)=>({
                 url : `${USER_URL}/register`,
@@ -66,4 +80,5 @@ import {apiSlice} from "../apiSlice"
     })
  })
 
- export const {useLoginMutation,useRegisterMutation,useLogoutMutation,useGetAllUsersQuery,useDeleteUserMutation,useGetUserDetailsQuery,useUpdateUserMutation,useProfileMutation} = userApiSlice
+ export const {useLoginMutation,useRegisterMutation,useLogoutMutation,useGetAllUsersQuery,useDeleteUserMutation,useGetUserDetailsQuery,useUpdateUserMutation,useProfileMutation,useForgotPasswordMutation,
+    useResetPasswordMutation,} = userApiSlice

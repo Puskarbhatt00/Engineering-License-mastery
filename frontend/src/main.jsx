@@ -19,13 +19,23 @@ import AddQuestion from './pages/admin/questions/CreateQuestions.jsx'
 import QuestionList from './pages/admin/questions/QuestionsList.jsx'
 import EditQuestion from './pages/admin/questions/EditQuestions.jsx'
 import MockTest from './pages/courses/MockTest.jsx'
+import ForgotPassword from './pages/auth/ForgotPassword.jsx'
+import ResetPassword from './pages/auth/ResetPassword.jsx'
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App/>}>
         <Route path='/login' element={<Login/>}/>
     <Route path='/signup' element={<Signup/>}/>
+
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+
+
+
     <Route index={true} path="/" element={<Home />} />
     <Route path='/about' element={<About/>}/>
+
     
 
 {/* privacy route */}

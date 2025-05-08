@@ -1,5 +1,5 @@
 import express from "express";
-import { createUser, deleteUserById,getAllUsers, getUserById, getUserDetails, login, logout, updateCurrentUserProfile, updateUserById } from "../controller/userController.js";
+import { createUser, deleteUserById,forgotPassword,getAllUsers, getUserById, getUserDetails, login, logout, resetPassword, updateCurrentUserProfile, updateUserById } from "../controller/userController.js";
 import { authenticate, authorizeAdmin } from "../middleware/authMiddleware.js"
 const router = express.Router()
 
@@ -13,5 +13,9 @@ router.route("/:id")
 .delete(authenticate, authorizeAdmin, deleteUserById)
 .get(authenticate, authorizeAdmin, getUserById)
   .put(authenticate, authorizeAdmin, updateUserById);
+
+  // Forgot/Reset password routes
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 export default router

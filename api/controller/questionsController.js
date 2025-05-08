@@ -57,14 +57,21 @@ export const deleteQuestions = asyncHandler(async(req,res)=>{
 })
 
 export const getQuestionsByCategory = asyncHandler(async(req,res)=>{
-    try {
-        const questions = await Question.find({ category: req.params.category }).limit(20);
-        res.json(questions); // Each question will include _id
-      } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch questions' });
+  try {
+      const questions = await Question.aggregate([
+          { $match: { category: req.params.category } },
+          { $sample: { size: 20 } }  // Get 20 random questions
+      ]);
+      
+      if(questions.length === 0) {
+          return res.status(404).json({ error: 'No questions found for this category' });
       }
-    
-})
+      
+      res.json(questions);
+  } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch questions' });
+  }
+});
 
 export const categories = asyncHandler(async(req,res)=>{
   try {

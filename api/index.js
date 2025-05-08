@@ -20,7 +20,7 @@ import questionsRoute from "./routes/questionsRoute.js"
 import resultRoute from "./routes/resultRoute.js"
 import categoryRoute from "./routes/categoryRoute.js"
 import leaderboardRoute from "./routes/leaderboardRoute.js"
-app.use("/api/v2", userRoute)
+app.use("/api/v2/users", userRoute);
 app.use("/api/questions", questionsRoute)
 app.use("/api/results", resultRoute)
 app.use("/api/categories", categoryRoute)

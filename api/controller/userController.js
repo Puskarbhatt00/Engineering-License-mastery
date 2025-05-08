@@ -2,6 +2,13 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import createToken from "../utils/createToken.js";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
+
+
+
+
+
 export const createUser = asyncHandler(async(req,res,next)=>{
 const {name,password,email} = req.body;
 
@@ -148,3 +155,59 @@ export const updateCurrentUserProfile = asyncHandler(async(req,res,next)=>{
       throw new Error("User not found");
     }
   });
+
+  // Forgot Password
+  export const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.json({ message: "If your email is in our system, you'll receive a password reset link within 5 minutes." });
+    }
+
+    try {
+        const token = crypto.randomBytes(32).toString("hex");
+        user.resetToken = token;
+        user.resetTokenExpiry = Date.now() + 300000; // 5 minutes (300,000 ms)
+        await user.save();
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;
+        await transporter.sendMail({
+            to: user.email,
+            subject: "Password Reset",
+            html: `<p>Click <a href="${resetUrl}">here</a> to reset your password. This link will expire in 5 minutes.</p>`
+        });
+
+        res.json({ message: "If your email is in our system, you'll receive a password reset link within 5 minutes." });
+    } catch (error) {
+        console.error("Password reset error:", error);
+        res.status(500).json({ message: "Failed to send reset email" });
+    }
+});
+
+// Reset Password
+export const resetPassword = asyncHandler(async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+    const user = await User.findOne({
+        resetToken: token,
+        resetTokenExpiry: { $gt: Date.now() }
+    });
+    if (!user) {
+        res.status(400);
+        throw new Error("Invalid or expired token");
+    }
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await user.save();
+    res.json({ message: "Password reset successful. Please log in." });
+});
